@@ -11,7 +11,7 @@ generics, and another version for go1.18 and newer, that does use these features
 constraints control which version gets compiled, and tests exist for both.
 
 In general, this is another bad idea. Go projects should just move to using the new
-features and not bother with maintaining multiple versions, [https://github.com/golang/go/issues/52880](see).
+features and not bother with maintaining multiple versions, [see](https://github.com/golang/go/issues/52880).
 I mostly did this as an experiment and to keep an obvious record of the older style.
 
 ```go
