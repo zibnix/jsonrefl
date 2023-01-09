@@ -3,9 +3,9 @@
 package jsonrefl
 
 import (
-	"errors"
-	"fmt"
 	"reflect"
+
+	"github.com/pkg/errors"
 )
 
 // FromObject is a helper function for unpacking values out of
@@ -16,16 +16,16 @@ import (
 // they use reflection to try and match types.
 func FromObject(obj map[string]interface{}, key string, value interface{}) error {
 	if obj == nil {
-		return errors.New("Attempt to get value from a nil JSON object.")
+		return errors.New("attempt to get value from a nil JSON object")
 	}
 
 	if len(key) == 0 {
-		return errors.New("Attempt to pull value for empty key from JSON object.")
+		return errors.New("attempt to pull value for empty key from JSON object")
 	}
 
 	val, gotVal := obj[key]
 	if !gotVal {
-		return fmt.Errorf("No value found for key: %s", key)
+		return errors.Errorf("no value found for key: %s", key)
 	}
 
 	return setVal(value, val)
@@ -39,11 +39,11 @@ func FromObject(obj map[string]interface{}, key string, value interface{}) error
 // they use reflection to try and match types.
 func FromArray(arr []interface{}, index int, value interface{}) error {
 	if arr == nil {
-		return errors.New("Attempt to get value from a nil JSON aray.")
+		return errors.New("attempt to get value from a nil JSON array")
 	}
 
 	if index < 0 || index >= len(arr) {
-		return fmt.Errorf("Provided index %d was out of range.", index)
+		return errors.Errorf("provided index %d was out of range", index)
 	}
 
 	val := arr[index]
@@ -55,7 +55,7 @@ func setVal(value interface{}, jsonVal interface{}) error {
 	// make sure the interface provided is a pointer, so that we can modify the value
 	expectedType := reflect.TypeOf(value)
 	if expectedType == nil || expectedType.Kind() != reflect.Ptr {
-		return errors.New("Provided value is of invalid type (must be pointer).")
+		return errors.New("provided value is of invalid type (must be pointer)")
 	}
 
 	// we know it's a pointer, so get the type of value being pointed to
@@ -65,8 +65,8 @@ func setVal(value interface{}, jsonVal interface{}) error {
 	actualType := reflect.TypeOf(jsonVal)
 
 	if !actualType.AssignableTo(expectedType) {
-		return fmt.Errorf(
-			"Provided reference is to a value of type %s that cannot be assigned to type found in JSON: %s.",
+		return errors.Errorf(
+			"provided reference is to a value of type %s that cannot be assigned to type found in JSON: %s",
 			expectedType, actualType)
 	}
 
@@ -76,13 +76,13 @@ func setVal(value interface{}, jsonVal interface{}) error {
 	pv := reflect.ValueOf(value)
 	if !pv.IsValid() {
 		// This should be quite rare
-		return fmt.Errorf("Provided value could not be reflected: (v) IsValid returned false. Please refer to the reflect package documentation.")
+		return errors.Errorf("provided value could not be reflected: (v) IsValid returned false, please refer to the reflect package documentation")
 	}
 
 	// Elem() gets the value being pointed to
 	v := pv.Elem()
 	if !v.CanSet() {
-		return fmt.Errorf("Provided value could not be set: (v) CanSet returned false. Was this an unexported struct field?")
+		return errors.Errorf("provided value could not be set: (v) CanSet returned false, was this an unexported struct field(?)")
 	}
 
 	// and we can set it directly to what we found in the JSON, since we

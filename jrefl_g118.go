@@ -3,9 +3,9 @@
 package jsonrefl
 
 import (
-	"errors"
-	"fmt"
 	"reflect"
+
+	"github.com/pkg/errors"
 )
 
 // FromObject is a helper function for unpacking values out of
@@ -17,16 +17,16 @@ func FromObject[T any](obj map[string]any, key string) (T, error) {
 	var t T
 
 	if obj == nil {
-		return t, errors.New("Attempt to get value from a nil JSON object.")
+		return t, errors.New("attempt to get value from a nil JSON object")
 	}
 
 	if len(key) == 0 {
-		return t, errors.New("Attempt to pull value for empty key from JSON object.")
+		return t, errors.New("attempt to pull value for empty key from JSON object")
 	}
 
 	val, gotVal := obj[key]
 	if !gotVal {
-		return t, fmt.Errorf("No value found for key: %s", key)
+		return t, errors.Errorf("no value found for key: %s", key)
 	}
 
 	return getVal[T](val)
@@ -41,11 +41,11 @@ func FromArray[T any](arr []any, index int) (T, error) {
 	var t T
 
 	if arr == nil {
-		return t, errors.New("Attempt to get value from a nil JSON aray.")
+		return t, errors.New("attempt to get value from a nil JSON aray")
 	}
 
 	if index < 0 || index >= len(arr) {
-		return t, fmt.Errorf("Provided index %d was out of range.", index)
+		return t, errors.Errorf("provided index %d was out of range", index)
 	}
 
 	val := arr[index]
@@ -59,8 +59,8 @@ func getVal[T any](val any) (T, error) {
 	ty := reflect.TypeOf(t)
 
 	if ty != nil && !reflect.TypeOf(val).AssignableTo(ty) {
-		return t, fmt.Errorf(
-			"Provided reference is to a value of type %T that cannot be assigned to type found in JSON: %T.",
+		return t, errors.Errorf(
+			"provided reference is to a value of type %T that cannot be assigned to type found in JSON: %T.",
 			t, val)
 	}
 
