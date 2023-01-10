@@ -12,7 +12,10 @@ constraints control which version gets compiled, and tests exist for both.
 
 In general, this is another bad idea. Go projects should just move to using the new
 features and not bother with maintaining multiple versions, [see](https://github.com/golang/go/issues/52880).
-I mostly did this as an experiment and to keep an obvious record of the older style.
+This is why this module is marked as relying on go1.18, because there is no way to tell
+the module system that it supports earlier versions of Go while containing source files
+that use `any` and generics. I mostly did this as an experiment and to keep a visible
+record of the older style.
 
 ```go
 import "github.com/zibnix/jsonrefl"
